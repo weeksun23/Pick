@@ -1,13 +1,18 @@
 (function($){
 	"use strict";
 	var methods = {
-		
+		getValue : function(){
+			var scroll = this.data("scroll");
+			var inter = this.height() / this.data('options').scaleNum;
+			var index = parseInt(Math.abs(scroll.y) / inter);
+			return this.data("data")[index];
+		}
 	};
 	function getDataHtml(options){
 		var data = options.data;
 		var vF = options.valueField;
 		var tF = options.textField;
-		var extra = new Array((options.scaleNum - 1) / 2 + 1).join("<li class='pick-list-item vbh'></li>");
+		var extra = new Array((options.scaleNum - 1) / 2 + 1).join("<li class='pick-list-item vbh'>a</li>");
 		var html = [extra];
 		for(var i=0,item;item=data[i++];){
 			html.push("<li class='pick-list-item' data-value='"+item[vF]+"'><span>"+item[tF]+"</span></li>");
@@ -36,11 +41,19 @@
 		var $center = this.children("div.pick-center");
 		if(options.unit){
 			//处理单位
+			var maxW = 0;
+			$item.each(function(){
+				var $span = $(this).children("span");
+				if($span.length > 0){
+					var w = $span.width();
+					if(w > maxW) maxW = w;
+				}
+			});
 			$center.css({
 				top : maskHeightPercent,
 				height : tickHeightPercent,
 				'line-height' : tickH + 'px'
-			}).children("span").width($item.find("span").width());
+			}).children("span").width(maxW);
 			$center.children("i").text(options.unit);
 		}else{
 			$center.remove();
@@ -82,7 +95,7 @@
             scroll.on("scrollStart",function(){
             	isTriggerOnPick = false;
             });
-			return this.data("scroll",scroll);
+			return this.data("scroll",scroll).data("data",options.data);
 		}else{
 			return methods[options].apply(this,[].slice.call(arguments,1));
 		}

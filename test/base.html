@@ -30,6 +30,7 @@
 		<div class='hour'></div>
 		<div class='minute'></div>
 		<div class='second'></div>
+		<button id='btn'>value</button>
 	</div>
 	
 	<!-- 
@@ -84,6 +85,10 @@
 		$("#time>div.second").pick({
 			data : getData(60),
 			unit : "秒"
+		});
+		$("#btn").click(function(){
+			var val = $("#time>div.hour").pick("getValue");
+			console.log(val);
 		});
 	</script>
 </body>
