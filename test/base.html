@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<meta name="format-detection" content="telephone=no" >
+	<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no">
+	<title>pick base</title>
+	<link rel='stylesheet' href='../src/css/pick.css'>
+	<style type="text/css">
+		* {
+		  -webkit-box-sizing: border-box;
+		  -moz-box-sizing: border-box;
+		  box-sizing: border-box;
+		}
+		.fl{float:left;}
+		.test{float: left;margin:5px;}
+		#pick1{border: 1px solid red;height: 300px;width: 200px;}
+		#pick2{border:1px solid #d2d2d2;height: 210px;width:100px;}
+		.time{width: 300px;font-size: 12px;height: 102px;border:1px solid #d2d2d2;}
+		.time>div{width: 33.3333333%;border-right: 1px solid #d2d2d2;float: left;height: 100%;}
+		.time>div:last-child{border-right: 0}
+
+	</style>
+</head>
+<body>
+	<div class='test' id='pick1'></div>
+	<div class='test' id='pick2'></div>
+	<br clear='both'>
+	<div class='time' id='time'>
+		<div class='hour'></div>
+		<div class='minute'></div>
+		<div class='second'></div>
+	</div>
+	
+	<!-- 
+	<script src='../lib/jquery/jquery-2.1.3.min.js'></script>
+	<script src='../lib/jquery/jquery-1.10.2.min.js'></script>
+	
+	-->
+	<script src='../lib/zepto/zepto.min.js'></script>
+	<script src='../lib/zepto/data.js'></script>
+	<script src='../lib/iscroll/iscroll-lite.js'></script>
+	<script src="../src/js/pick.js"></script>
+	<script>
+		var data = [];
+		for(var i=0;i<20;i++){
+			data.push({
+				value : i,
+				text : i
+			});
+		}
+		$("#pick1").pick({
+			data : data,
+			unit : "单位",
+			onPick : function(){
+				console.log('onPick');
+			}
+		});
+		$("#pick2").pick({
+			data : data,
+			scaleNum : 3,
+			onPick : function(){
+				console.log('onPick');
+			}
+		});
+		function getData(n){
+			var data = [];
+			for(var i=0;i<n;i++){
+				data.push({
+					value : i,
+					text : i < 10 ? ('0' + i) : i
+				});
+			}
+			return data;
+		}
+		$("#time>div.hour").pick({
+			data : getData(24),
+			unit : "时"
+		});
+		$("#time>div.minute").pick({
+			data : getData(60),
+			unit : "分"
+		});
+		$("#time>div.second").pick({
+			data : getData(60),
+			unit : "秒"
+		});
+	</script>
+</body>
+</html>
