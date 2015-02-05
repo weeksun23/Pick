@@ -1,11 +1,31 @@
 (function($){
 	"use strict";
 	var methods = {
+		//获取所选的value
 		getValue : function(){
 			var scroll = this.data("scroll");
-			var inter = this.height() / this.data('options').scaleNum;
-			var index = parseInt(Math.abs(scroll.y) / inter);
-			return this.data("data")[index];
+			var options = this.data('options');
+			var index = parseInt(Math.abs(scroll.y) / options.tickH);
+			var sel = options.data[index];
+			return sel ? sel[options.valueField] : null;
+		},
+		setValue : function(value){
+			var options = this.data('options');
+			var data = options.data;
+			for(var i=0,ii=data.length;i<ii;i++){
+				if(data[i][options.valueField] === value){
+					this.data('scroll').scrollTo(0,-i * options.tickH,200);
+					return this;
+				}
+			}
+			return this;
+		},
+		loadData : function(data){
+			var options = this.data('options');
+			options.data = data || [];
+			this.data("scroll").destroy();
+			initHtml.call(this,options);
+			return this;
 		}
 	};
 	function getDataHtml(options){
@@ -58,6 +78,26 @@
 		}else{
 			$center.remove();
 		}
+		initScroll.call(this,options);
+	}
+	function initScroll(options){
+		var scroll = new IScroll(this.get(0));
+		this.data("scroll",scroll);
+		var isTriggerOnPick = false;
+        scroll.on("scrollEnd",function(){
+        	var tickH = options.tickH;
+    		var y = Math.abs(this.y);
+    		var d = y % tickH;
+            if(d === 0) {
+            	options.onPick && options.onPick.call(me);
+            	return;
+            };
+            isTriggerOnPick = true;
+            this.scrollTo(0,-Math.round(y / tickH) * tickH,200);
+        });
+        scroll.on("scrollStart",function(){
+        	isTriggerOnPick = false;
+        });
 	}
 	/*
 	要求目标区域必须没有padding，且height必须是scaleNum的倍数
@@ -78,24 +118,7 @@
                 unit : null
 			},options);
 			initHtml.call(this,options);
-			//生成iscroll
-			var scroll = new IScroll(this.get(0));
-			var isTriggerOnPick = false;
-            scroll.on("scrollEnd",function(){
-            	var tickH = options.tickH;
-        		var y = Math.abs(this.y);
-        		var d = y % tickH;
-                if(d === 0) {
-                	options.onPick && options.onPick.call(me);
-                	return;
-                };
-                isTriggerOnPick = true;
-                this.scrollTo(0,-Math.round(y / tickH) * tickH,200);
-            });
-            scroll.on("scrollStart",function(){
-            	isTriggerOnPick = false;
-            });
-			return this.data("scroll",scroll).data("data",options.data);
+			return this;
 		}else{
 			return methods[options].apply(this,[].slice.call(arguments,1));
 		}
