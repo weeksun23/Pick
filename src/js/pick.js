@@ -83,13 +83,14 @@
 	function initScroll(options){
 		var scroll = new IScroll(this.get(0));
 		this.data("scroll",scroll);
+		var me = this;
 		var isTriggerOnPick = false;
         scroll.on("scrollEnd",function(){
         	var tickH = options.tickH;
     		var y = Math.abs(this.y);
     		var d = y % tickH;
             if(d === 0) {
-            	options.onPick && options.onPick.call(me);
+            	options.onPick && options.onPick.call(me,options.data[parseInt(y / tickH)]);
             	return;
             };
             isTriggerOnPick = true;

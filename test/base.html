@@ -54,7 +54,10 @@
 					text : "C#",value : "C#"
 				},{
 					text : "python",value : "python"
-				}]
+				}],
+				onPick : function(){
+					log(arguments);
+				}
 			});
 			$("#getValue").click(function(){
 				log($("#pick1").pick('getValue'));
