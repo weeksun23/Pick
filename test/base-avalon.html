@@ -23,6 +23,7 @@
 	<div class='tac'>
 		<button ms-on-tap='$getValue'>getValue</button>
 		<button ms-on-tap='$setValue'>setValue</button>
+		<button ms-on-tap='$resize'>resize</button>
 	</div>
 	<div class='zone' ms-widget='pick,$demopick,$demoPickOpts'></div>
 	<script src='../asset/avalon.mobile.js'></script>
@@ -48,6 +49,9 @@
 				vm.$setValue = function(){
 					avalon.vmodels.$demopick.setValue('python');
 				};
+				vm.$resize = function(){
+					avalon.vmodels.$demopick.resize(407);
+				}
 			});
 			avalon.scan();
 		});

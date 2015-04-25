@@ -17,11 +17,7 @@ define(["avalon",'lib/iscroll/iscroll-lite',"css!./avalon.pick.css"],function(av
 			"<i>{{unit}}</i><span class='pick-unit-mid'>1</span><i class='pick-unit'>{{unit}}</i>"+
 		"</div>";
 	function getFixHeight(h,scaleNum){
-		var d = h % scaleNum;
-		if(d > scaleNum / 2){
-			d = -d;
-		}
-		return h + d;
+		return h - h % scaleNum;
 	}
 	var widget = avalon.ui.pick = function(element, data, vmodels){
 		var options = data.pickOptions;
@@ -101,10 +97,10 @@ define(["avalon",'lib/iscroll/iscroll-lite',"css!./avalon.pick.css"],function(av
 			};
 			//重新调整高度
 			vm.resize = function(height){
-				height = getFixHeight(height);
+				height = getFixHeight(height,vmodel.scaleNum);
+				element.style.height = height + 'px';
 				vmodel.tickH = height / vmodel.scaleNum;
 				vmodel.tickHeight = vmodel.tickH + "px";
-				element.style.height = height + 'px';
 				scroll.refresh();
 			}
 		});
