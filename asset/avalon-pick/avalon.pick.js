@@ -16,19 +16,35 @@ define(["avalon",'lib/iscroll/iscroll-lite',"css!./avalon.pick.css"],function(av
 		"<div ms-if='unit' class='pick-center' ms-css-line-height='tickHeight' ms-css-top='maskHeightPercent' ms-css-bottom='maskHeightPercent'>"+
 			"<i>{{unit}}</i><span class='pick-unit-mid'>1</span><i class='pick-unit'>{{unit}}</i>"+
 		"</div>";
+	function getFixHeight(h,scaleNum){
+		var d = h % scaleNum;
+		if(d > scaleNum / 2){
+			d = -d;
+		}
+		return h + d;
+	}
 	var widget = avalon.ui.pick = function(element, data, vmodels){
 		var options = data.pickOptions;
 		//上下占位
 		options.extra = new Array((options.scaleNum - 1) / 2 + 1).join("<li class='pick-list-item vbh' ms-css-line-height='tickHeight'>a</li>");
-		var tickH = avalon(element).height() / options.scaleNum;
-		options.tickHeight = tickH + 'px';
+		//计算每一块的高度 并根据实际情况修正element高度
+		options.tickH = (function(){
+			var h = avalon(element).height();
+			var scaleNum = options.scaleNum;
+			var newH = getFixHeight(h,scaleNum);
+			if(h !== newH){
+				element.style.height = newH + 'px';
+			}
+			return newH / scaleNum;
+		})();
+		options.tickHeight = options.tickH + "px";
 		//上下遮罩百分比高度
 		options.maskHeightPercent = (1 / options.scaleNum * 100 * (options.scaleNum - 1) / 2) + "%";
 		var scroll;
 		var vmodel = avalon.define(data.pickId,function(vm){
 			avalon.mix(vm,options);
 			vm.widgetElement = element;
-			vm.$skipArray = ['widgetElement','setValue','getValue'];
+			vm.$skipArray = ['widgetElement','setValue','getValue','tickH'];
 			vm.$init = function(){
 				var $el = avalon(element);
 				$el.addClass('pick');
@@ -47,19 +63,29 @@ define(["avalon",'lib/iscroll/iscroll-lite',"css!./avalon.pick.css"],function(av
 				scroll = new IScroll(element);
 	            scroll.on("scrollEnd",function(){
 	        		var y = Math.abs(this.y);
+	        		var tickH = vmodel.tickH;
 	        		var d = y % tickH;
 	                if(d === 0) {
 	                	vmodel.onPick && vmodel.onPick.call(me);
 	                	return;
 	                };
-	                this.scrollTo(0,-Math.round(y / tickH) * tickH,200);
+	                var target = Math.round(y / tickH) * tickH;
+	                var distance = Math.abs(y - target);
+	                var maxTime = 300;
+	                var half = tickH / 2;
+	                if(distance >= half){
+	                	var time = maxTime;
+	                }else{
+	                	time = parseInt(distance / half * maxTime);
+	                }
+	                this.scrollTo(0,-target,time);
 	            });
 			};
 			vm.$remove = function(){
-				element.innerHTML = element.textContent = ""
+				element.innerHTML = element.textContent = "";
 			};
 			vm.getValue = function(){
-				var index = parseInt(Math.abs(scroll.y) / tickH);
+				var index = parseInt(Math.abs(scroll.y) / vmodel.tickH);
 				var sel = vmodel.data[index];
 				return sel ? sel[vmodel.valueField] : null;
 			};
@@ -67,12 +93,20 @@ define(["avalon",'lib/iscroll/iscroll-lite',"css!./avalon.pick.css"],function(av
 				var data = vmodel.data;
 				for(var i=0,ii=data.length;i<ii;i++){
 					if(data[i][vmodel.valueField] === value){
-						scroll.scrollTo(0,-i * tickH,200);
+						scroll.scrollTo(0,-i * vmodel.tickH,200);
 						return this;
 					}
 				}
 				return this;
 			};
+			//重新调整高度
+			vm.resize = function(height){
+				height = getFixHeight(height);
+				vmodel.tickH = height / vmodel.scaleNum;
+				vmodel.tickHeight = vmodel.tickH + "px";
+				element.style.height = height + 'px';
+				scroll.refresh();
+			}
 		});
 		return vmodel;
 	};
