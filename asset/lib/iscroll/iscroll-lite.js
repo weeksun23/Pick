@@ -935,8 +935,10 @@ IScroll.prototype = {
 };
 IScroll.utils = utils;
 
-if ( typeof module != 'undefined' && module.exports ) {
-	module.exports = IScroll;
+if ( typeof define != 'undefined') {
+	define(function(){
+		return IScroll
+	});
 } else {
 	window.IScroll = IScroll;
 }

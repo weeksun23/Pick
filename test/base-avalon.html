@@ -4,8 +4,7 @@
 	<meta charset='utf-8'>
 	<meta name="format-detection" content="telephone=no" >
 	<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no">
-	<title>pick base</title>
-	<link rel='stylesheet' href='../src/css/pick.css'>
+	<title>avalon pick</title>
 	<style type="text/css">
 		body{font-family: 宋体,Helvetica,Arial,sans-serif;font-size: 12px;}
 		body,h1,h2,h3,h4,h5,p{margin: 0;padding:0;}
@@ -16,30 +15,48 @@
 		  -moz-box-sizing: border-box;
 		  box-sizing: border-box;
 		}
-		.zone{margin:10px auto;}
-		#pick1{border: 1px solid #d2d2d2;height: 300px;width: 200px;}
+		.zone{margin:10px auto;border: 1px solid #d2d2d2;height: 302px;width: 200px;}
 	</style>
 </head>
-<body>
+<body ms-controller='pickdemo'>
 	<h1>Pick</h1>
 	<div class='tac'>
-		<button id='getValue'>getValue</button>
-		<button id='setValue'>setValue</button>
-		<button id='loadData'>loadData</button>
+		<button ms-on-tap='$getValue'>getValue</button>
+		<button ms-on-tap='$setValue'>setValue</button>
 	</div>
-	<div class='zone' id='pick1'></div>
-	
+	<div class='zone' ms-widget='pick,$demopick,$demoPickOpts'></div>
 	<!-- 
 	<script src='../lib/jquery/jquery-2.1.3.min.js'></script>
 	<script src='../lib/jquery/jquery-1.10.2.min.js'></script>
-	
 	-->
-	<script src='../lib/zepto/zepto.min.js'></script>
-	<script src='../lib/zepto/data.js'></script>
-	<script src='../lib/iscroll/iscroll-lite.js'></script>
-	<script src="../src/js/pick.js"></script>
+	<script src='../asset/avalon.mobile.js'></script>
 	<script>
-		(function(){
+		require(["avalon-pick/avalon.pick"],function(){
+			var vmodel = avalon.define("pickdemo",function(vm){
+				vm.$demoPickOpts = {
+					data : [{
+						text : "C++",value : "C++"
+					},{
+						text : "javascript",value : "javascript"
+					},{
+						text : "java",value : "java"
+					},{
+						text : "C#",value : "C#"
+					},{
+						text : "python",value : "python"
+					}]
+				};
+				vm.$getValue = function(){
+					alert(avalon.vmodels.$demopick.getValue());
+				};
+				vm.$setValue = function(){
+					avalon.vmodels.$demopick.setValue('python');
+				};
+			});
+			avalon.scan();
+		});
+
+		/*(function(){
 			function log(){
 				console.log.apply(console,arguments);
 			}
@@ -78,7 +95,7 @@
 					text : "5",value : 5
 				}])
 			});
-		})();
+		})();*/
 	</script>
 </body>
 </html>
